@@ -1,0 +1,54 @@
+name: Push to docker hub
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  push:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Build & push Docker image for bootStrapping node
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: haroun9/bootstrapping
+          tags: latest
+          registry: docker.io
+          dockerfile: Final/BootStrapping
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build & push Docker image for Node
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: haroun9/node
+          tags: latest
+          registry: docker.io
+          dockerfile: Final/Node
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build & push Docker image for Demo
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: haroun9/demo
+          tags: latest
+          registry: docker.io
+          dockerfile: Final/Demo
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}

@@ -1,0 +1,46 @@
+version: "3"
+services:
+
+  BootStrapping:
+    image: boot
+    container_name: BootStrapping
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8999:8999"
+    networks:
+      - testnet
+    environment:
+      - node_number=5
+      - node_image=node
+      - node_network=final_testnet
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8999/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  Demo:
+    image: demo
+    container_name: Demo
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - testnet
+    depends_on:
+      BootStrapping:
+        condition: service_healthy
+    environment:
+      - database_url=http://BootStrapping:8999
+      - database=DemoDB
+      - username=haroun
+      - password=pass123
+      - create=true
+      - application_port=8080
+
+
+networks:
+  testnet:
