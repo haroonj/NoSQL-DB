@@ -4,14 +4,11 @@ package com.example.bootstrapping.config;
 import com.example.bootstrapping.model.query.OperationType;
 import com.example.bootstrapping.model.request.CreateContainerRequest;
 import com.example.bootstrapping.model.request.QueryRequest;
-import com.example.bootstrapping.model.response.QueryResponse;
 import com.example.bootstrapping.model.system.Node;
 import com.example.bootstrapping.model.system.User;
 import com.example.bootstrapping.service.CommunicationService;
 import com.example.bootstrapping.service.DockerService;
 import com.example.bootstrapping.service.NodeService;
-import com.example.bootstrapping.util.JSONUtil;
-import com.github.dockerjava.api.exception.ConflictException;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +46,7 @@ public class AppStartupListener implements ApplicationListener<ApplicationReadyE
     public void onApplicationEvent(@NonNull ApplicationReadyEvent event) {
         try {
             List<Node> nodeList = nodeService.generateNodes(Integer.parseInt(numOfNodes));
-            System.out.println(nodeList.toString());
+            log.info(nodeList.toString());
             int initialPort = 8000;
             for (Node node : nodeList) {
                 CreateContainerRequest createContainerRequest = new CreateContainerRequest(nodeImage, networkName, node.getName(), node.getUrl(), initialPort++);
@@ -64,12 +61,10 @@ public class AppStartupListener implements ApplicationListener<ApplicationReadyE
             initiateAdminUser(nodeList);
             log.info("finish admin user ");
             nodeService.setReady(true);
-        } catch (Exception e) {
-            if (!(e instanceof ConflictException)) {
-                nodeService.setReady(false);
-                throw new RuntimeException(e);
-            }
-            nodeService.setReady(true);
+        } catch (InterruptedException | IllegalArgumentException e) {
+            log.error(e.getMessage());
+            nodeService.setReady(false);
+            Thread.currentThread().interrupt();
         }
     }
 
