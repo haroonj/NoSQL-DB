@@ -3,5 +3,5 @@ EXPOSE 8999
 ENV node_number=5
 ENV node_image=node
 ENV node_network=final_testnet
-COPY target/jars/BootStrapping-0.0.1-SNAPSHOT.jar BootStrapping.jar
+COPY Final/target/jars/BootStrapping-0.0.1-SNAPSHOT.jar BootStrapping.jar
 ENTRYPOINT ["java","-jar","BootStrapping.jar"]

@@ -1,5 +1,5 @@
 FROM openjdk:8
 ENV node_port=8080
 ENV node_url=http://localhost:8080
-COPY target/jars/Node-0.0.1-SNAPSHOT.jar Node.jar
+COPY Final/target/jars/Node-0.0.1-SNAPSHOT.jar Node.jar
 ENTRYPOINT ["java","-jar","Node.jar"]

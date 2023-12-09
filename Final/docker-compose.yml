@@ -2,7 +2,7 @@ version: "3"
 services:
 
   BootStrapping:
-    image: boot
+    image: haroun9/bootstrapping
     container_name: BootStrapping
     restart: unless-stopped
     volumes:
@@ -13,7 +13,7 @@ services:
       - testnet
     environment:
       - node_number=5
-      - node_image=node
+      - node_image=haroun9/node
       - node_network=final_testnet
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8999/health" ]
@@ -23,7 +23,7 @@ services:
 
 
   Demo:
-    image: demo
+    image: haroun9/demo
     container_name: Demo
     restart: unless-stopped
     ports:
